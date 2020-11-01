@@ -7,7 +7,8 @@ section 'data' data readable writeable
         strEnterA db 'Enter A',10,0    ;Строки для вывода
         strEnterB db 'Enter B',10,0
         strAless db 'A < B',10,0
-        strAnotless db 'A >= B',10,0
+        strAnotless db 'A > B',10,0
+        strAequal db 'A = B',10,0
         strScanString  db '%s', 0         ;Для ввода строк
         A db 256 dup(?)    ;Массивы для строк
         B db 256 dup(?)
@@ -36,15 +37,18 @@ start:
         .loop: ;Начало цикла
         repz cmpsb      ;Побайтовое сравнение source и designation пока A[n]=B[n] или ecx!=0
         test ecx,ecx     ;Eсли ecx = 0 то строки равны
-        jz .show_result  ;Вывод сообщения что A >= B
+        jz .equal  ;Вывод сообщения что A = B
         dec esi
         dec edi
         cmpsb       ;Повторное сравнение последних двух байт
-        ja .show_result    ;Если он больше то А >= B
+        ja .show_result    ;Если он больше то А > B
         ;Иначе если A[n]<B[n] то вывесли что A < B
         .less:
         mov [result_string],strAless
         ;Вывод ответа
+        jmp .show_result
+        .equal:
+        mov [result_string],strAequal
         .show_result:
         push [result_string]
         call [printf]
